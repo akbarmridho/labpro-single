@@ -1,15 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { DrizzleType, PG_CONNECTION } from '../drizzle/drizzle.module';
-import { users } from '../drizzle/schema';
+import { User, users } from '../drizzle/schema';
+import { eq } from 'drizzle-orm';
 
 @Injectable()
 export class UsersService {
   constructor(@Inject(PG_CONNECTION) private conn: DrizzleType) {}
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
-  }
 
   async findAll() {
     const res = await this.conn.select().from(users);
@@ -19,11 +15,17 @@ export class UsersService {
     return `This action returns a #${id} user`;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
+  async findByUsername(username: string): Promise<User | null> {
+    const res = await this.conn
+      .select()
+      .from(users)
+      .where(eq(users.username, username))
+      .limit(1);
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+    if (res.length === 0) {
+      return null;
+    }
+
+    return res[0];
   }
 }
