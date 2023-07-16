@@ -8,6 +8,8 @@ import {
   Delete,
   Query,
   UseGuards,
+  BadRequestException,
+  Put,
 } from '@nestjs/common';
 import { CompaniesService } from './companies.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
@@ -18,32 +20,47 @@ import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiResponse,
+  ApiTags,
 } from '@nestjs/swagger';
 import { createResponseSchema } from '../utils/wrapper';
 import { selectCompanySchema } from '../drizzle/schema';
 import { createZodDto } from 'nestjs-zod';
 
-const singleCompanyResponseSchema = createZodDto(
+class SingleCompanyResponseDto extends createZodDto(
   createResponseSchema(selectCompanySchema),
-);
+) {}
+
+class ManyCompanyResponseDto extends createZodDto(
+  createResponseSchema(selectCompanySchema.array()),
+) {}
 
 @UseGuards(AuthGuard)
 @ApiBearerAuth()
+@ApiTags('perusahaan')
 @Controller('perusahaan')
 export class CompaniesController {
   constructor(private readonly companiesService: CompaniesService) {}
 
   @ApiCreatedResponse({
-    type: singleCompanyResponseSchema,
+    type: SingleCompanyResponseDto,
   })
   @Post()
   async create(@Body() createCompanyDto: CreateCompanyDto) {
-    const res = await this.companiesService.create(createCompanyDto);
-    return res[0];
+    try {
+      const res = await this.companiesService.create(createCompanyDto);
+
+      return res[0];
+    } catch (e) {
+      if (e instanceof Error && 'code' in e && e.code === '23505') {
+        throw new BadRequestException('unique error');
+      }
+
+      throw e;
+    }
   }
 
   @ApiOkResponse({
-    type: createZodDto(createResponseSchema(selectCompanySchema.array())),
+    type: ManyCompanyResponseDto,
   })
   @Get()
   findAll(@Query('q') q?: string) {
@@ -52,24 +69,32 @@ export class CompaniesController {
 
   @Get(':id')
   @ApiResponse({
-    type: singleCompanyResponseSchema,
+    type: SingleCompanyResponseDto,
   })
   async findOne(@Param('id') id: string) {
-    await this.companiesService.findOne(id);
+    return this.companiesService.findOne(id);
   }
 
-  @Patch(':id')
-  @ApiResponse({ type: singleCompanyResponseSchema })
+  @Put(':id')
+  @ApiResponse({ type: SingleCompanyResponseDto })
   async update(
     @Param('id') id: string,
     @Body() updateCompanyDto: UpdateCompanyDto,
   ) {
-    const company = await this.companiesService.update(id, updateCompanyDto);
-    return company[0];
+    try {
+      const company = await this.companiesService.update(id, updateCompanyDto);
+      return company[0];
+    } catch (e) {
+      if (e instanceof Error && 'code' in e && e.code === '23505') {
+        throw new BadRequestException('unique error');
+      }
+
+      throw e;
+    }
   }
 
   @Delete(':id')
-  @ApiResponse({ type: singleCompanyResponseSchema })
+  @ApiResponse({ type: SingleCompanyResponseDto })
   async remove(@Param('id') id: string) {
     const company = await this.companiesService.remove(id);
     return company[0];

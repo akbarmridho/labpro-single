@@ -1,0 +1,74 @@
+POST http://localhost:3000/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "password"
+}
+
+> {%
+  client.global.set("auth_token", response.body.data.token);
+%}
+
+###
+
+GET http://localhost:3000/perusahaan
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+###
+
+GET http://localhost:3000/perusahaan?q=ca
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+###
+
+POST http://localhost:3000/perusahaan
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "nama": "Hoyoverse",
+  "alamat": "China",
+  "kode": "ABC",
+  "no_telp": "089512341234"
+}
+
+###
+
+POST http://localhost:3000/perusahaan
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "nama": "admin",
+  "alamat": "password",
+  "kode": "ABAC",
+  "no_telp": "089512341234"
+}
+
+###
+
+PUT http://localhost:3000/perusahaan/07ca4caf-9cad-406f-b852-e14256e57df9
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "nama": "Hoyoverse",
+  "alamat": "password",
+  "kode": "AAC",
+  "no_telp": "089512341234"
+}
+
+###
+
+GET http://localhost:3000/perusahaan/07ca4caf-9cad-406f-b852-e14256e57df9
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+###
+
+DELETE http://localhost:3000/perusahaan/07ca4caf-9cad-406f-b852-e14256e57df9
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}

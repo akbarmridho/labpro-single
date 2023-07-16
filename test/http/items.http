@@ -1,0 +1,71 @@
+POST http://localhost:3000/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "password"
+}
+
+> {%
+  client.global.set("auth_token", response.body.data.token);
+%}
+
+###
+
+GET http://localhost:3000/barang?q=EULA&perusahaan=Hoyoverse
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+###
+
+POST http://localhost:3000/barang
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "nama": "EULA",
+  "harga": 15000,
+  "stok": 10,
+  "perusahaan_id": "659f6d2d-4173-495b-b5cc-5fe3c5f46078",
+  "kode": "EUL"
+}
+
+###
+
+POST http://localhost:3000/barang
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "nama": "EULA",
+  "harga": 15000,
+  "stok": 10,
+  "perusahaan_id": "659f6d2d-4173-495b-b5cc-5fe3c5f46070",
+  "kode": "AA"
+}
+
+###
+
+PUT http://localhost:3000/barang/8622d884-db9c-4280-8871-1defd74d6881
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "nama": "EULA",
+  "harga": 115000,
+  "stok": 2,
+  "perusahaan_id": "659f6d2d-4173-495b-b5cc-5fe3c5f46078",
+  "kode": "EI"
+}
+
+###
+
+GET http://localhost:3000/barang/8622d884-db9c-4280-8871-1defd74d6881
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+###
+
+DELETE http://localhost:3000/barang/8622d884-db9c-4280-8871-1defd74d6881
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}

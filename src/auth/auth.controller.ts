@@ -31,13 +31,20 @@ const loginSchema = z.object({
   token: z.string(),
 });
 
+class LoginResponseDto extends createZodDto(
+  createResponseSchema(loginSchema),
+) {}
+class SelfSesponseDto extends createZodDto(
+  createResponseSchema(userSessionSchema),
+) {}
+
 @Controller()
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
-    type: createZodDto(createResponseSchema(loginSchema)),
+    type: LoginResponseDto,
   })
   @ApiTags('auth')
   @Post('login')
@@ -50,7 +57,7 @@ export class AuthController {
   @UseGuards(AuthGuard)
   @ApiTags('auth')
   @ApiBearerAuth()
-  @ApiResponse({ type: createZodDto(createResponseSchema(userSessionSchema)) })
+  @ApiResponse({ type: SelfSesponseDto })
   @Get('self')
   getProfile(@Request() req): z.infer<typeof userSessionSchema> {
     return {

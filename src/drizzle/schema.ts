@@ -54,7 +54,8 @@ export type Company = InferModel<typeof companies>;
 
 export const insertCompanySchema = createInsertSchema(companies, {
   kode: (schema) => schema.kode.length(3).toUpperCase(),
-});
+  no_telp: (schema) => schema.no_telp.min(6).max(16),
+}).omit({ id: true });
 
 export const selectCompanySchema = createSelectSchema(companies);
 
@@ -88,6 +89,7 @@ export type Item = InferModel<typeof items>;
 
 export const insertItemSchema = createInsertSchema(items, {
   stok: (schema) => schema.stok.gte(0),
-});
+  harga: (schema) => schema.harga.gt(0),
+}).omit({ id: true });
 
 export const selectItemSchema = createSelectSchema(items);

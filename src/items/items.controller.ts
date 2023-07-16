@@ -3,11 +3,12 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   UseGuards,
   Query,
+  BadRequestException,
+  Put,
 } from '@nestjs/common';
 import { ItemsService } from './items.service';
 import { CreateItemDto } from './dto/create-item.dto';
@@ -18,6 +19,7 @@ import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiResponse,
+  ApiTags,
 } from '@nestjs/swagger';
 import { createZodDto } from 'nestjs-zod';
 import { createResponseSchema } from '../utils/wrapper';
@@ -28,7 +30,8 @@ const singleItemResponseSchema = createZodDto(
 );
 @UseGuards(AuthGuard)
 @ApiBearerAuth()
-@Controller('items')
+@ApiTags('barang')
+@Controller('barang')
 export class ItemsController {
   constructor(private readonly itemsService: ItemsService) {}
 
@@ -37,8 +40,16 @@ export class ItemsController {
   })
   @Post()
   async create(@Body() createItemDto: CreateItemDto) {
-    const res = await this.itemsService.create(createItemDto);
-    return res[0];
+    try {
+      const res = await this.itemsService.create(createItemDto);
+      return res[0];
+    } catch (e) {
+      if (e instanceof Error && 'code' in e) {
+        throw new BadRequestException('unique error or invalid foreign key');
+      }
+
+      throw e;
+    }
   }
 
   @ApiOkResponse({
@@ -55,11 +66,19 @@ export class ItemsController {
     return this.itemsService.findOne(id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   @ApiResponse({ type: singleItemResponseSchema })
   async update(@Param('id') id: string, @Body() updateItemDto: UpdateItemDto) {
-    const items = await this.itemsService.update(id, updateItemDto);
-    return items[0];
+    try {
+      const items = await this.itemsService.update(id, updateItemDto);
+      return items[0];
+    } catch (e) {
+      if (e instanceof Error && 'code' in e) {
+        throw new BadRequestException('unique error or invalid foreign key');
+      }
+
+      throw e;
+    }
   }
 
   @Delete(':id')

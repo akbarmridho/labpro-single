@@ -16,7 +16,7 @@ export class CompaniesService {
   async findAll(q?: string): Promise<Company[]> {
     let query = this.conn.select().from(companies);
     if (q && q !== '') {
-      query = query.where(or(eq(items.kode, q), like(items.nama, q)));
+      query = query.where(or(eq(companies.kode, q), like(companies.nama, q)));
     }
 
     return query;
