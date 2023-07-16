@@ -10,18 +10,16 @@ export class CompaniesService {
   constructor(@Inject(PG_CONNECTION) private conn: DrizzleType) {}
 
   async create(createCompanyDto: CreateCompanyDto) {
-    return this.conn.insert(companies).values(createCompanyDto);
+    return this.conn.insert(companies).values(createCompanyDto).returning();
   }
 
   async findAll(q?: string): Promise<Company[]> {
-    if (q) {
-      return this.conn
-        .select()
-        .from(companies)
-        .where(or(eq(items.kode, q), like(items.nama, q)));
+    let query = this.conn.select().from(companies);
+    if (q && q !== '') {
+      query = query.where(or(eq(items.kode, q), like(items.nama, q)));
     }
 
-    return this.conn.select().from(companies);
+    return query;
   }
 
   async findOne(id: string) {
@@ -39,16 +37,15 @@ export class CompaniesService {
   }
 
   async update(id: string, updateCompanyDto: UpdateCompanyDto) {
-    await this.conn
+    return this.conn
       .update(companies)
       .set(updateCompanyDto)
-      .where(eq(companies.id, id));
-
-    return this.findOne(id);
+      .where(eq(companies.id, id))
+      .returning();
   }
 
   async remove(id: string) {
     await this.conn.delete(items).where(eq(items.perusahaan_id, id));
-    return this.conn.delete(companies).where(eq(companies.id, id));
+    return this.conn.delete(companies).where(eq(companies.id, id)).returning();
   }
 }

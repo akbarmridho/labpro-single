@@ -1,4 +1,4 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateItemDto } from './create-item.dto';
+import { createZodDto } from 'nestjs-zod';
+import { insertItemSchema } from '../../drizzle/schema';
 
-export class UpdateItemDto extends PartialType(CreateItemDto) {}
+export class UpdateItemDto extends createZodDto(insertItemSchema) {}

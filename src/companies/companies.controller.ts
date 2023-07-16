@@ -8,7 +8,6 @@ import {
   Delete,
   Query,
   UseGuards,
-  BadRequestException,
 } from '@nestjs/common';
 import { CompaniesService } from './companies.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
@@ -38,8 +37,9 @@ export class CompaniesController {
     type: singleCompanyResponseSchema,
   })
   @Post()
-  create(@Body() createCompanyDto: CreateCompanyDto) {
-    return this.companiesService.create(createCompanyDto);
+  async create(@Body() createCompanyDto: CreateCompanyDto) {
+    const res = await this.companiesService.create(createCompanyDto);
+    return res[0];
   }
 
   @ApiOkResponse({
@@ -51,17 +51,11 @@ export class CompaniesController {
   }
 
   @Get(':id')
-  @ApiCreatedResponse({
+  @ApiResponse({
     type: singleCompanyResponseSchema,
   })
   async findOne(@Param('id') id: string) {
-    const company = await this.companiesService.findOne(id);
-
-    if (company === null) {
-      throw new BadRequestException('Company not found');
-    }
-
-    return company;
+    await this.companiesService.findOne(id);
   }
 
   @Patch(':id')
@@ -71,25 +65,13 @@ export class CompaniesController {
     @Body() updateCompanyDto: UpdateCompanyDto,
   ) {
     const company = await this.companiesService.update(id, updateCompanyDto);
-
-    if (company === null) {
-      throw new BadRequestException('Company not found');
-    }
-
-    return company;
+    return company[0];
   }
 
   @Delete(':id')
   @ApiResponse({ type: singleCompanyResponseSchema })
   async remove(@Param('id') id: string) {
-    const deleted = await this.companiesService.findOne(id);
-
-    if (deleted === null) {
-      throw new BadRequestException('Company not found');
-    }
-
-    await this.companiesService.remove(id);
-
-    return deleted;
+    const company = await this.companiesService.remove(id);
+    return company[0];
   }
 }
