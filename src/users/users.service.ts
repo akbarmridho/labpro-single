@@ -7,14 +7,6 @@ import { eq } from 'drizzle-orm';
 export class UsersService {
   constructor(@Inject(PG_CONNECTION) private conn: DrizzleType) {}
 
-  async findAll() {
-    const res = await this.conn.select().from(users);
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
-
   async findByUsername(username: string): Promise<User | null> {
     const res = await this.conn
       .select()

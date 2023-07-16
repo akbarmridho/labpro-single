@@ -60,11 +60,13 @@ export const items = pgTable(
   'items',
   {
     id: uuid('id').defaultRandom().primaryKey(),
-    nama: text('nama'),
-    harga: integer('harga'),
-    stok: integer('stok').default(0),
-    perusahaan_id: uuid('perusahaan_id').references(() => companies.id),
-    kode: varchar('kode', { length: 255 }),
+    nama: text('nama').notNull(),
+    harga: integer('harga').notNull(),
+    stok: integer('stok').default(0).notNull(),
+    perusahaan_id: uuid('perusahaan_id')
+      .references(() => companies.id)
+      .notNull(),
+    kode: varchar('kode', { length: 255 }).notNull(),
   },
   (items) => ({
     kodeIndex: uniqueIndex('kode_index').on(items.kode),
