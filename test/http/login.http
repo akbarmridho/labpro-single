@@ -1,0 +1,43 @@
+POST http://localhost:3000/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "password"
+}
+
+> {%
+  client.global.set("auth_token", response.body.data.token);
+%}
+
+###
+
+POST http://localhost:3000/login
+Content-Type: application/json
+
+{
+  "username": "admin"
+}
+
+###
+
+POST http://localhost:3000/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": null
+}
+
+###
+
+GET http://localhost:3000/self
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+###
+
+GET http://localhost:3000/self
+Content-Type: application/json
+
+###

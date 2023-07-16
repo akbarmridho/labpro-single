@@ -64,7 +64,10 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiResponse({ type: createZodDto(userSessionSchema) })
   @Get('self')
-  getProfile(@Request() req) {
-    return req.user;
+  getProfile(@Request() req): z.infer<typeof userSessionSchema> {
+    return {
+      username: req.user.username,
+      name: req.user.name,
+    };
   }
 }

@@ -4,6 +4,8 @@ import { Pool } from 'pg';
 import * as schema from './schema';
 import { drizzle, NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
+import { users } from './schema';
+import * as bcrypt from 'bcrypt';
 
 export type DrizzleType = NodePgDatabase<typeof schema>;
 
@@ -24,6 +26,17 @@ export const PG_CONNECTION = Symbol('PG_CONNECTION');
         const db: DrizzleType = drizzle(pool, { schema });
 
         await migrate(db, { migrationsFolder: 'migrations' });
+
+        // seed admin if not exist
+        const firstUser = await db.query.users.findFirst();
+
+        if (!firstUser) {
+          await db.insert(users).values({
+            name: 'Akbar Maulana Ridho',
+            username: 'admin',
+            password: await bcrypt.hash('password', 10),
+          });
+        }
 
         return db;
       },
