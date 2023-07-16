@@ -4,12 +4,16 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { HttpExceptionFilter } from './utils/http-exception.filter';
 import { patchNestJsSwagger } from 'nestjs-zod';
 import * as process from 'process';
+import { ZodValidationExceptionFilter } from './utils/zod-exception.filter';
+import { TransformInterceptor } from './utils/transform.interceptor';
 
 async function bootstrap() {
   process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = String(0);
 
   const app = await NestFactory.create(AppModule);
+  app.useGlobalFilters(new ZodValidationExceptionFilter());
   app.useGlobalFilters(new HttpExceptionFilter());
+  app.useGlobalInterceptors(new TransformInterceptor());
   patchNestJsSwagger();
 
   const config = new DocumentBuilder()

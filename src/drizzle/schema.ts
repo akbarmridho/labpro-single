@@ -52,7 +52,9 @@ export const companiesRelations = relations(companies, ({ many }) => {
 
 export type Company = InferModel<typeof companies>;
 
-export const insertCompanySchema = createInsertSchema(companies);
+export const insertCompanySchema = createInsertSchema(companies, {
+  kode: (schema) => schema.kode.length(3).toUpperCase(),
+});
 
 export const selectCompanySchema = createSelectSchema(companies);
 
@@ -84,6 +86,8 @@ export const itemsRelations = relations(items, ({ one }) => {
 
 export type Item = InferModel<typeof items>;
 
-export const insertItemSchema = createInsertSchema(items);
+export const insertItemSchema = createInsertSchema(items, {
+  stok: (schema) => schema.stok.gte(0),
+});
 
 export const selectItemSchema = createSelectSchema(items);

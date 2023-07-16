@@ -26,12 +26,10 @@ const userSessionSchema = z.object({
   name: z.string(),
 });
 
-const loginResponseSchema = createResponseSchema(
-  z.object({
-    user: userSessionSchema,
-    token: z.string(),
-  }),
-);
+const loginSchema = z.object({
+  user: userSessionSchema,
+  token: z.string(),
+});
 
 @Controller()
 export class AuthController {
@@ -39,30 +37,20 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
-    type: createZodDto(loginResponseSchema),
+    type: createZodDto(createResponseSchema(loginSchema)),
   })
   @ApiTags('auth')
   @Post('login')
   async signIn(
     @Body() signInDto: LoginDto,
-  ): Promise<z.infer<typeof loginResponseSchema>> {
-    // custom zod error pipe, cek github page nest-zod
-    const payload = await this.authService.signIn(
-      signInDto.username,
-      signInDto.password,
-    );
-
-    return {
-      data: payload,
-      status: 'success',
-      message: 'Login berhasil',
-    };
+  ): Promise<z.infer<typeof loginSchema>> {
+    return this.authService.signIn(signInDto.username, signInDto.password);
   }
 
   @UseGuards(AuthGuard)
   @ApiTags('auth')
   @ApiBearerAuth()
-  @ApiResponse({ type: createZodDto(userSessionSchema) })
+  @ApiResponse({ type: createZodDto(createResponseSchema(userSessionSchema)) })
   @Get('self')
   getProfile(@Request() req): z.infer<typeof userSessionSchema> {
     return {
