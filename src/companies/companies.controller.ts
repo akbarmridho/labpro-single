@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Query,
@@ -72,7 +71,13 @@ export class CompaniesController {
     type: SingleCompanyResponseDto,
   })
   async findOne(@Param('id') id: string) {
-    return this.companiesService.findOne(id);
+    const company = await this.companiesService.findOne(id);
+
+    if (company === null) {
+      throw new BadRequestException('not found');
+    }
+
+    return company;
   }
 
   @Put(':id')
@@ -83,6 +88,11 @@ export class CompaniesController {
   ) {
     try {
       const company = await this.companiesService.update(id, updateCompanyDto);
+
+      if (company.length === 0) {
+        throw new BadRequestException('not found');
+      }
+
       return company[0];
     } catch (e) {
       if (e instanceof Error && 'code' in e && e.code === '23505') {
@@ -97,6 +107,11 @@ export class CompaniesController {
   @ApiResponse({ type: SingleCompanyResponseDto })
   async remove(@Param('id') id: string) {
     const company = await this.companiesService.remove(id);
+
+    if (company.length === 0) {
+      throw new BadRequestException('not found');
+    }
+
     return company[0];
   }
 }

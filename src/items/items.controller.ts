@@ -63,7 +63,13 @@ export class ItemsController {
   @Get(':id')
   @ApiResponse({ type: singleItemResponseSchema })
   async findOne(@Param('id') id: string) {
-    return this.itemsService.findOne(id);
+    const item = await this.itemsService.findOne(id);
+
+    if (item === null) {
+      throw new BadRequestException('not found');
+    }
+
+    return item;
   }
 
   @Put(':id')
@@ -71,6 +77,11 @@ export class ItemsController {
   async update(@Param('id') id: string, @Body() updateItemDto: UpdateItemDto) {
     try {
       const items = await this.itemsService.update(id, updateItemDto);
+
+      if (items.length === 0) {
+        throw new BadRequestException('not found');
+      }
+
       return items[0];
     } catch (e) {
       if (e instanceof Error && 'code' in e) {
@@ -85,6 +96,11 @@ export class ItemsController {
   @ApiResponse({ type: singleItemResponseSchema })
   async remove(@Param('id') id: string) {
     const items = await this.itemsService.remove(id);
+
+    if (items.length === 0) {
+      throw new BadRequestException('not found');
+    }
+
     return items[0];
   }
 }
