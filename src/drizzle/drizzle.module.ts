@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { Pool } from 'pg';
 import * as schema from './schema';
 import { drizzle, NodePgDatabase } from 'drizzle-orm/node-postgres';
+import { migrate } from 'drizzle-orm/node-postgres/migrator';
 
 export type DrizzleType = NodePgDatabase<typeof schema>;
 
@@ -21,6 +22,8 @@ export const PG_CONNECTION = Symbol('PG_CONNECTION');
         });
 
         const db: DrizzleType = drizzle(pool, { schema });
+
+        await migrate(db, { migrationsFolder: 'migrations' });
 
         return db;
       },

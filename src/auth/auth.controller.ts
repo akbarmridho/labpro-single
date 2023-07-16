@@ -12,7 +12,12 @@ import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
 import { createResponseSchema } from '../utils/wrapper';
 import { LoginDto } from './dto/login.dto';
-import { ApiOkResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { z } from 'nestjs-zod/z';
 import { createZodDto } from 'nestjs-zod';
 
@@ -36,6 +41,7 @@ export class AuthController {
   @ApiOkResponse({
     type: createZodDto(loginResponseSchema),
   })
+  @ApiTags('auth')
   @Post('login')
   async signIn(
     @Body() signInDto: LoginDto,
@@ -54,6 +60,9 @@ export class AuthController {
   }
 
   @UseGuards(AuthGuard)
+  @ApiTags('auth')
+  @ApiBearerAuth()
+  @ApiResponse({ type: createZodDto(userSessionSchema) })
   @Get('self')
   getProfile(@Request() req) {
     return req.user;
