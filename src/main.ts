@@ -6,6 +6,7 @@ import { patchNestJsSwagger } from 'nestjs-zod';
 import * as process from 'process';
 import { ZodValidationExceptionFilter } from './utils/zod-exception.filter';
 import { TransformInterceptor } from './utils/transform.interceptor';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = String(0);
@@ -26,7 +27,9 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(3000);
+  const configService = app.get(ConfigService);
+
+  await app.listen(configService.get<number>('PORT', 3000));
 }
 
 void bootstrap();

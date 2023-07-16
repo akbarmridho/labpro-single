@@ -4,8 +4,10 @@ import { Pool } from 'pg';
 import * as schema from './schema';
 import { drizzle, NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
-import { users } from './schema';
+import { companies, insertItemSchema, items, users } from './schema';
 import * as bcrypt from 'bcrypt';
+import { generateCompany, generateItem } from './generator';
+import { z } from 'nestjs-zod/z';
 
 export type DrizzleType = NodePgDatabase<typeof schema>;
 
@@ -27,7 +29,7 @@ export const PG_CONNECTION = Symbol('PG_CONNECTION');
 
         await migrate(db, { migrationsFolder: 'migrations' });
 
-        // seed admin if not exist
+        // flag for unseeded database
         const firstUser = await db.query.users.findFirst();
 
         if (!firstUser) {
@@ -36,6 +38,21 @@ export const PG_CONNECTION = Symbol('PG_CONNECTION');
             username: 'admin',
             password: await bcrypt.hash('password', 10),
           });
+
+          const companiesSeed = await db
+            .insert(companies)
+            .values([generateCompany(), generateCompany(), generateCompany()])
+            .returning();
+
+          for (const companySeed of companiesSeed) {
+            const seededitems: z.infer<typeof insertItemSchema>[] = [];
+
+            for (let i = 0; i < 10; i++) {
+              seededitems.push(generateItem(companySeed.id));
+            }
+
+            await db.insert(items).values(seededitems);
+          }
         }
 
         return db;

@@ -1,73 +1,50 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+<h1 align="center"> Labpro Single Service </h1>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+<p align="center">Author: Akbar Maulana Ridho (13521093)</p>
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Languages, Libraries and Tech Stack
 
-## Description
+- NestJS Framework
+- Drizzle ORM
+- Typescript
+- Zod Validation Schema
+- Swagger
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Installation
+## Running The App
 
 ```bash
-$ npm install
+$ docker compose up
 ```
 
-## Running the app
+## Design Pattern
 
-```bash
-# development
-$ npm run start
+### Decorator Pattern
 
-# watch mode
-$ npm run start:dev
+Digunakan untuk melakukan penambahan (extension) fungsionalitas dari suatu objek atau fungsi. Pattern ini banyak digunakan pada project ini, terlebih lagi mengingat NestJS banyak menyediakan wrapepr utility yang salah satunya berupa decorator yang sudah siap digunakan. Penggunaan decorator mempermudah saya untuk menambah fungsionalitas method/ class tanpa mengorbankan readability.
 
-# production mode
-$ npm run start:prod
-```
+### Dependency Injection
 
-## Test
+Digunakan agar project ini bisa terpisah-pisah menjadi modul yang mudah dibongkar pasang dan mempermudah pengaturan dependency suatu kelas. Selain itu, kelas yang membutuhkan suatu dependency tidak perlu pusing untuk memikirkan bagaimana cara membuat dan mengatur lifecycle kelas tersebut.
 
-```bash
-# unit tests
-$ npm run test
+### Interceptor Pattern
 
-# e2e tests
-$ npm run test:e2e
+Digunakan untuk melakukan transformasi HTTP response dari controller sebelum menuju user. Perhatikan bahwa bentuk response pada setiap endpoint sama sehingga kita bisa mengurangi repetisi untuk membentuk response yang sama dengan menulis sebuah interceptor sehingga bentuk responsenya bisa sama pada setiap endpoint.
 
-# test coverage
-$ npm run test:cov
-```
 
-## Support
+## Endpoint
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Sesuai dengan API contract, dengan API akan mengembalikan status 400 pada endpoint GET by id, UPDATE, dan DELETE bila model yang berkaitan tidak ditemukan (bukan return null)
 
-## Stay in touch
+## Bonus
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Single Service Implementation
 
-## License
+Typescript and Zod is the king.
 
-Nest is [MIT licensed](LICENSE).
+### Dokumentasi APi
+
+Tersedia pada endpoint /api. Dokumentasi swagger langsung digenerate dari annotation pada setiap controller dan tipenya di-infer dari skema database. Drizzle terintegrasi dengan Zod, yang terintegrasi dengan NestJS, yang terintegrasi dengan Swagger.
+
+### SOLID
+
+Cukup jelas bila memperhatikan folder structure dan isi kodenya.
