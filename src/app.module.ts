@@ -7,17 +7,25 @@ import { ConfigModule } from '@nestjs/config';
 import { ItemsModule } from './items/items.module';
 import { CompaniesModule } from './companies/companies.module';
 import { AuthModule } from './auth/auth.module';
+import { APP_PIPE } from '@nestjs/core';
+import { ZodValidationPipe } from 'nestjs-zod';
 
 @Module({
   imports: [
-    UsersModule,
-    DrizzleModule,
     ConfigModule.forRoot({ isGlobal: true }),
+    DrizzleModule,
+    UsersModule,
     ItemsModule,
     CompaniesModule,
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_PIPE,
+      useClass: ZodValidationPipe,
+    },
+  ],
 })
 export class AppModule {}

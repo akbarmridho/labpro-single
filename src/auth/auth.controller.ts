@@ -10,17 +10,47 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
-import { Public } from './constants';
+import { createResponseSchema } from '../utils/wrapper';
+import { LoginDto } from './dto/login.dto';
+import { ApiOkResponse } from '@nestjs/swagger';
+import { z } from 'nestjs-zod/z';
+import { createZodDto } from 'nestjs-zod';
+
+const userSessionSchema = z.object({
+  username: z.string(),
+  name: z.string(),
+});
+
+const loginResponseSchema = createResponseSchema(
+  z.object({
+    user: userSessionSchema,
+    token: z.string(),
+  }),
+);
 
 @Controller()
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Public()
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    type: createZodDto(loginResponseSchema),
+  })
   @Post('login')
-  signIn(@Body() signInDto: Record<string, any>) {
-    return this.authService.signIn(signInDto.username, signInDto.password);
+  async signIn(
+    @Body() signInDto: LoginDto,
+  ): Promise<z.infer<typeof loginResponseSchema>> {
+    // custom zod error pipe, cek github page nest-zod
+    const payload = await this.authService.signIn(
+      signInDto.username,
+      signInDto.password,
+    );
+
+    return {
+      data: payload,
+      status: 'success',
+      message: 'Login berhasil',
+    };
   }
 
   @UseGuards(AuthGuard)

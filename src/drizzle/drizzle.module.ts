@@ -26,5 +26,6 @@ export const PG_CONNECTION = Symbol('PG_CONNECTION');
       },
     },
   ],
+  exports: [PG_CONNECTION],
 })
 export class DrizzleModule {}
