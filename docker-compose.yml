@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  app:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    volumes:
+      - ./:/usr/src/app
+      - ignore:/usr/src/app/node_modules/
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/postgres
+    ports:
+      - ${PORT:-3000}:${PORT:-3000}
+    depends_on:
+      - postgres
+  postgres:
+    image: postgres
+    restart: always
+    ports:
+      - "5000:5432"
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - labpro-single-postgres:/var/lib/postgresql/data
+
+volumes:
+  ignore:
+  labpro-single-postgres:

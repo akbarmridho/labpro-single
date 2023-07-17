@@ -20,9 +20,10 @@ export const PG_CONNECTION = Symbol('PG_CONNECTION');
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => {
         const connectionString = configService.get<string>('DATABASE_URL');
+
         const pool = new Pool({
           connectionString,
-          ssl: true,
+          ssl: false,
         });
 
         const db: DrizzleType = drizzle(pool, { schema });
