@@ -15,7 +15,6 @@ services:
       - postgres
   postgres:
     image: postgres
-    restart: always
     ports:
       - "5000:5432"
     environment:
