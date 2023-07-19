@@ -24,6 +24,7 @@ import {
 import { createZodDto } from 'nestjs-zod';
 import { createResponseSchema } from '../utils/wrapper';
 import { selectItemSchema } from '../drizzle/schema';
+import { Public } from '../auth/constants';
 
 const singleItemResponseSchema = createZodDto(
   createResponseSchema(selectItemSchema),
@@ -56,12 +57,14 @@ export class ItemsController {
     type: createZodDto(createResponseSchema(selectItemSchema.array())),
   })
   @Get()
+  @Public()
   findAll(@Query('q') q?: string, @Query('perusahaan') perusahaan?: string) {
     return this.itemsService.findAll(q, perusahaan);
   }
 
   @Get(':id')
   @ApiResponse({ type: singleItemResponseSchema })
+  @Public()
   async findOne(@Param('id') id: string) {
     const item = await this.itemsService.findOne(id);
 
@@ -74,6 +77,7 @@ export class ItemsController {
 
   @Put(':id')
   @ApiResponse({ type: singleItemResponseSchema })
+  @Public()
   async update(@Param('id') id: string, @Body() updateItemDto: UpdateItemDto) {
     try {
       const items = await this.itemsService.update(id, updateItemDto);

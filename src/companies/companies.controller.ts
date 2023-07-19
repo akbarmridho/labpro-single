@@ -24,6 +24,7 @@ import {
 import { createResponseSchema } from '../utils/wrapper';
 import { selectCompanySchema } from '../drizzle/schema';
 import { createZodDto } from 'nestjs-zod';
+import { Public } from '../auth/constants';
 
 class SingleCompanyResponseDto extends createZodDto(
   createResponseSchema(selectCompanySchema),
@@ -62,6 +63,7 @@ export class CompaniesController {
     type: ManyCompanyResponseDto,
   })
   @Get()
+  @Public()
   findAll(@Query('q') q?: string) {
     return this.companiesService.findAll(q);
   }
@@ -70,6 +72,7 @@ export class CompaniesController {
   @ApiResponse({
     type: SingleCompanyResponseDto,
   })
+  @Public()
   async findOne(@Param('id') id: string) {
     const company = await this.companiesService.findOne(id);
 
